@@ -52,3 +52,7 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# Temp file
+temp.txt
+temp.dat
