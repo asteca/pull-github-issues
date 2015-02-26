@@ -93,8 +93,6 @@ def replace_old_issues(path, html_issues):
 		# Re-write file with new, replaced with patter, string var.
 		f.write(text2)
 
-	return
-
 
 def git_acp(path):
 	'''
@@ -119,20 +117,22 @@ def git_acp(path):
 	push_cmd = """git push"""
 	os.system(push_cmd)
 
-	return
+
+def main():
+	# Define path of git repo.
+	path = '/media/rest/github/asteca-project/asteca.github.io/'
+
+	# Download data.
+	lines = get_github_data()
+	# Extract issues.
+	issues = get_issues(lines)
+	# Format issues as HTML lines.
+	html_issues = html_format(issues)
+	# Replace old issues with new ones in file.
+	replace_old_issues(path, html_issues)
+	# Add, commit and push changes.
+	git_acp(path)
 
 
-# Define path of git repo.
-path = '/media/rest/github/asteca-project/asteca.github.io/'
-
-# Download data.
-lines = get_github_data()
-# Extract issues.
-issues = get_issues(lines)
-# Format issues as HTML lines.
-html_issues = html_format(issues)
-# Replace old issues with new ones in file.
-replace_old_issues(path, html_issues)
-# Add, commit and push changes.
-git_acp(path)
-
+if __name__ == "__main__":
+    main()
