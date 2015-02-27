@@ -8,12 +8,12 @@ import time
 import os
 
 
-def get_github_data():
+def get_github_data(full_github_repo):
 	'''
 	Downloads closed issues from Github, ordered with latest modified
 	issue first.
 	'''
-	ff = urllib.urlopen("https://github.com/asteca/asteca/issues?q=is%3Aissue+is%3Aclosed+sort%3Aupdated-desc")
+	ff = urllib.urlopen(full_github_repo)
 	lines = [str(line) for line in ff]
 	f = open('temp.txt', 'w')
 	f.write("".join(lines))
@@ -34,7 +34,8 @@ def get_issues(lines):
     for index, line in enumerate(lines):
         # Get issue number.
         if line[:35] == '''    <a href="/asteca/asteca/issues/''':
-        	if lines[index + 1] != '''      <span class="octicon octicon-comment"></span>\n''':
+        	if lines[index + 1] != \
+        	'''      <span class="octicon octicon-comment"></span>\n''':
 	        	a = re.split('''" class=''', line)
 	        	b = re.split('''/asteca/asteca/issues/''', a[0])
 	        	if b[1] != 'new':
@@ -57,7 +58,7 @@ def get_issues(lines):
     return issues
 
 
-def html_format(issues):
+def html_format(issues, color):
 	'''
 	Format issues as HTML lines.
 	'''
@@ -65,7 +66,9 @@ def html_format(issues):
 	N = 7
 	html_issues = ''
 	for iss in zip(*issues)[:N]:
-		html_issues = html_issues + "<li>" + iss[3] + ''' - <a href="''' + iss[2] + '''">''' + iss[1] + "</a></li>\n"
+		html_issues = html_issues + "<li>" + iss[3] + ''' - <a href="''' + \
+		iss[2] + '''"><font color="''' + color + '''">''' + iss[1] + \
+		"</font></a></li>\n"
 
 	return html_issues
 
@@ -119,19 +122,34 @@ def git_acp(path):
 
 
 def main():
-	# Define path of git repo.
-	path = '/media/rest/github/asteca-project/asteca.github.io/'
+	'''
+	Call functions sequentially.
+	'''
+
+	# Define name of git repo where issues are stored.
+	github_repo = "asteca/asteca"
+	# Define path of git repo to update in the system.
+	repo_path = '/media/rest/github/asteca-project/asteca.github.io/'
+
+	# Full path to closed issues in Github repo, ordered according to the
+	# latest updated.
+	github0 = 'https://github.com/'
+	github1 = '/issues?q=is%3Aissue+is%3Aclosed+sort%3Aupdated-desc'
+	full_github_repo = github0 + github_repo + github1
+
+	# Define color of link.
+	color = '005555'
 
 	# Download data.
-	lines = get_github_data()
+	lines = get_github_data(full_github_repo)
 	# Extract issues.
 	issues = get_issues(lines)
 	# Format issues as HTML lines.
-	html_issues = html_format(issues)
+	html_issues = html_format(issues, color)
 	# Replace old issues with new ones in file.
 	replace_old_issues(path, html_issues)
 	# Add, commit and push changes.
-	git_acp(path)
+	git_acp(repo_path)
 
 
 if __name__ == "__main__":
