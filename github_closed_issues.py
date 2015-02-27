@@ -147,7 +147,7 @@ def main():
 	# Format issues as HTML lines.
 	html_issues = html_format(issues, color)
 	# Replace old issues with new ones in file.
-	replace_old_issues(path, html_issues)
+	replace_old_issues(repo_path, html_issues)
 	# Add, commit and push changes.
 	git_acp(repo_path)
 
