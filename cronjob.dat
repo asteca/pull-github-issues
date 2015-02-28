@@ -7,4 +7,4 @@
 # add job via command:
 http://unix.stackexchange.com/questions/187005/add-cron-job-via-single-command
 
-{ crontab -l; echo "30 23 * * * python /media/rest/github/asteca-project/pull-github-issues/github_closed_issues.py"; } | crontab -
+(crontab -u gabriel -l; echo "30 23 * * * python /media/rest/github/asteca-project/pull-github-issues/github_closed_issues.py" ) | crontab -u gabriel -
