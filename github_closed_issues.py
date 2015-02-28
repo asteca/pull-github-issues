@@ -66,9 +66,9 @@ def html_format(issues, color):
 	N = 7
 	html_issues = ''
 	for iss in zip(*issues)[:N]:
-		html_issues = html_issues + "<li>" + iss[3] + ''' - <a href="''' + \
-		iss[2] + '''"><font color="''' + color + '''">''' + iss[1] + \
-		"</font></a></li>\n"
+		html_issues = html_issues + '''<li><font color="''' + color + \
+		'''"><b>''' + iss[3] + '''</b></font> - <a href="''' + iss[2] + \
+		'''">''' + iss[1] + "</a></li>\n"
 
 	return html_issues
 
@@ -138,7 +138,7 @@ def main():
 	full_github_repo = github0 + github_repo + github1
 
 	# Define color of link.
-	color = '005555'
+	color = 'd64242'
 
 	# Download data.
 	lines = get_github_data(full_github_repo)
