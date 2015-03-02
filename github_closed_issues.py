@@ -15,9 +15,10 @@ def get_github_data(full_github_repo):
 	'''
 	ff = urllib.urlopen(full_github_repo)
 	lines = [str(line) for line in ff]
-	f = open('temp.txt', 'w')
-	f.write("".join(lines))
-	ff.close()
+
+	# f = open('temp.txt', 'w')
+	# f.write("".join(lines))
+	# ff.close()
 
 	# f = open('temp.txt', 'r')
 	# lines = [str(line) for line in f]
