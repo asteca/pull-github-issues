@@ -139,7 +139,7 @@ def main():
     full_github_repo = github0 + github_repo + github1
 
     # Define color of link.
-    color = 'd64242'
+    color = '4B7F69'
 
     # Download data.
     lines = get_github_data(full_github_repo)
