@@ -94,7 +94,7 @@ def replace_old_issues(path, html_issues):
 
     # Write index.html file.
     with open(index_file, 'w') as f:
-        # Re-write file with new, replaced with patter, string var.
+        # Re-write file with new, replaced with pattern, string var.
         f.write(text2)
 
 
