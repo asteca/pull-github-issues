@@ -2,8 +2,6 @@
 
 import urllib
 import re
-# import shlex
-import datetime
 import time
 import os
 
@@ -49,12 +47,10 @@ def get_issues(lines):
             # Get issue link.
             issues[2].append('https://github.com/asteca/ASteCA/issues/' + b[1])
         # Get time of last update.
-        if line[-8:] == '''</time>\n''':
-            a = re.split('''is="relative-time">''', line)
-            b = re.split('''</time>''', a[1])
-            date = datetime.datetime.strptime(b[0], "%b %d, %Y")
-            # issues[3].append(date.strftime("%d/%m/%y"))
-            issues[3].append(date.strftime("%d/%m"))
+        if line.endswith('''</relative-time>\n'''):
+            a = re.split("""\"""", line)
+            b = a[1][:10]
+            issues[3].append(b)
 
     return issues
 
@@ -130,7 +126,7 @@ def main():
     # Define name of git repo where issues are stored.
     github_repo = "asteca/ASteCA"
     # Define path of git repo to update in the system.
-    repo_path = '/media/rest/github/asteca-project/asteca.github.io/'
+    repo_path = os.path.realpath(__file__)[:-42] + 'asteca.github.io/'
 
     # Full path to closed issues in Github repo, ordered according to the
     # latest updated.
@@ -147,6 +143,7 @@ def main():
     issues = get_issues(lines)
     # Format issues as HTML lines.
     html_issues = html_format(issues, color)
+    print html_issues
     # Replace old issues with new ones in file.
     replace_old_issues(repo_path, html_issues)
     # Add, commit and push changes.
