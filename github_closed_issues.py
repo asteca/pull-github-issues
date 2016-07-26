@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import urllib
+import urllib, json
 import re
 import time
 import os
@@ -11,8 +11,14 @@ def get_github_data(full_github_repo):
     Downloads closed issues from Github, ordered with latest modified
     issue first.
     '''
-    ff = urllib.urlopen(full_github_repo)
-    lines = [str(line) for line in ff]
+    lines = []
+    response = urllib.urlopen(full_github_repo)
+    data = json.loads(response.read())
+    # Define number of issues to list.
+    N = 7
+    for d in data[:N]:
+        lines.append([str(d["closed_at"].split("T")[0]), str(d["html_url"]),
+                      str(d["title"])])
 
     # f = open('temp.txt', 'w')
     # f.write("".join(lines))
@@ -24,48 +30,17 @@ def get_github_data(full_github_repo):
     return lines
 
 
-def get_issues(lines):
-    '''
-    Splits file into numbers, titles, links and dates of last update
-    for each issue.
-    '''
-    issues = [[], [], [], []]
-    for index, line in enumerate(lines):
-        # Get issue number.
-        if line[:35] == '''    <a href="/asteca/ASteCA/issues/''':
-            if lines[index + 1] !=\
-                    '''      <span class="octicon octicon-comment"></span>\n''':
-                a = re.split('''" class=''', line)
-                b = re.split('''/asteca/ASteCA/issues/''', a[0])
-                if b[1] != 'new':
-                    # iss_num = int(b[1])
-                    issues[0].append(b[1])
-        # Get issue title.
-        if line[-45:] == '''class="issue-title-link js-navigation-open">\n''':
-            # print lines[index + 1]
-            issues[1].append(lines[index + 1][:-1].lstrip())
-            # Get issue link.
-            issues[2].append('https://github.com/asteca/ASteCA/issues/' + b[1])
-        # Get time of last update.
-        if line.endswith('''</relative-time>\n'''):
-            a = re.split("""\"""", line)
-            b = a[1][:10]
-            issues[3].append(b)
-
-    return issues
-
-
 def html_format(issues, color):
     '''
     Format issues as HTML lines.
     '''
-    # Define number of issues to list.
-    N = 7
+    # Define color of link.
+    color = '4B7F69'
     html_issues = ''
-    for iss in zip(*issues)[:N]:
+    for iss in issues:
         html_issues = html_issues + '''<li><font color="''' + color + \
-            '''"><b>''' + iss[3] + '''</b></font> - <a href="''' + iss[2] + \
-            '''">''' + iss[1] + "</a></li>\n"
+            '''"><b>''' + iss[0] + '''</b></font> - <a href="''' + iss[1] + \
+            '''">''' + iss[2] + "</a></li>\n"
 
     return html_issues
 
@@ -122,28 +97,21 @@ def main():
     '''
     Call functions sequentially.
     '''
-
-    # Define name of git repo where issues are stored.
-    github_repo = "asteca/ASteCA"
     # Define path of git repo to update in the system.
     repo_path = os.path.realpath(__file__)[:-42] + 'asteca.github.io/'
 
     # Full path to closed issues in Github repo, ordered according to the
     # latest updated.
-    github0 = 'https://github.com/'
-    github1 = '/issues?q=is%3Aissue+is%3Aclosed+sort%3Aupdated-desc'
-    full_github_repo = github0 + github_repo + github1
-
-    # Define color of link.
-    color = '4B7F69'
+    full_github_repo = 'https://api.github.com/repos/asteca/ASteCA/' +\
+        'issues?per_page=1000&state=closed&sort=updated-desc'
 
     # Download data.
-    lines = get_github_data(full_github_repo)
-    # Extract issues.
-    issues = get_issues(lines)
+    issues = get_github_data(full_github_repo)
+
     # Format issues as HTML lines.
-    html_issues = html_format(issues, color)
+    html_issues = html_format(issues)
     print html_issues
+
     # Replace old issues with new ones in file.
     replace_old_issues(repo_path, html_issues)
     # Add, commit and push changes.
