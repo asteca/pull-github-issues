@@ -30,7 +30,7 @@ def get_github_data(full_github_repo):
     return lines
 
 
-def html_format(issues, color):
+def html_format(issues):
     '''
     Format issues as HTML lines.
     '''
@@ -86,11 +86,11 @@ def git_acp(path):
     commit_cmd = """git commit -m "%s" """
     message = 'Auto commit, %s' % time.strftime("%c")
     print message
-    os.system(commit_cmd % message)
+    # os.system(commit_cmd % message)
 
-    # Push changes.
-    push_cmd = """git push"""
-    os.system(push_cmd)
+    # # Push changes.
+    # push_cmd = """git push"""
+    # os.system(push_cmd)
 
 
 def main():
