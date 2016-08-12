@@ -3,6 +3,7 @@
 import urllib, json
 import re
 import time
+import subprocess
 import os
 import logging
 
@@ -70,39 +71,49 @@ def replace_old_issues(path, html_issues):
         f.write(text2)
 
 
-def git_acp(path):
+def git_acp(mypath, repo_path):
     '''
     Add, commit and push changes to index.html file in the
     corresponding git dir.
     '''
     # Position in correct dir.
-    os.chdir(path)
+    os.chdir(repo_path)
 
     # Add file.
     filename = 'index.html'
-    add_cmd = """git add "%s" """
-    os.system(add_cmd % filename)
+    add_cmd = ["git", "add", filename]
+    try:
+        a = subprocess.check_output(add_cmd, stderr=subprocess.STDOUT)
+    except subprocess.CalledProcessError as cpe:
+        a = cpe.output
 
     # Commit changes.
-    commit_cmd = """git commit -m "%s" """
-    message = 'Auto commit, %s' % time.strftime("%c")
-    print message
-
-    logging.basicConfig(filename='commit.log', filemode='a',
-                        level=logging.DEBUG)
-    logging.info("   {}\n".format(message))
-
-    os.system(commit_cmd % message)
+    c_mssg = "Auto commit, {}".format(time.strftime("%c"))
+    commit_cmd = ["git", "commit", "-m", c_mssg]
+    try:
+        c = subprocess.check_output(commit_cmd, stderr=subprocess.STDOUT)
+    except subprocess.CalledProcessError as cpe:
+        c = cpe.output
 
     # Push changes.
-    push_cmd = """git push"""
-    os.system(push_cmd)
+    push_cmd = ["git", "push"]
+    try:
+        p = subprocess.check_output(push_cmd, stderr=subprocess.STDOUT)
+    except subprocess.CalledProcessError as cpe:
+        p = cpe.output
+
+    # Log to file.
+    logging.basicConfig(filename=mypath + '/commit.log', filemode='a',
+                        level=logging.DEBUG)
+    logging.info(" {}\n{} {} {}".format(time.strftime("%c"), a, c, p))
 
 
 def main():
     '''
     Call functions sequentially.
     '''
+    # Define path where this script is located
+    mypath = os.path.dirname(os.path.realpath(__file__))
     # Define path of git repo to update in the system.
     repo_path = os.path.realpath(__file__)[:-42] + 'asteca.github.io/'
 
@@ -121,7 +132,7 @@ def main():
     # Replace old issues with new ones in file.
     replace_old_issues(repo_path, html_issues)
     # Add, commit and push changes.
-    git_acp(repo_path)
+    git_acp(mypath, repo_path)
 
 
 if __name__ == "__main__":
