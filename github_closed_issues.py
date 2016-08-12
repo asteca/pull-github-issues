@@ -4,6 +4,7 @@ import urllib, json
 import re
 import time
 import os
+import logging
 
 
 def get_github_data(full_github_repo):
@@ -86,11 +87,16 @@ def git_acp(path):
     commit_cmd = """git commit -m "%s" """
     message = 'Auto commit, %s' % time.strftime("%c")
     print message
-    # os.system(commit_cmd % message)
 
-    # # Push changes.
-    # push_cmd = """git push"""
-    # os.system(push_cmd)
+    logging.basicConfig(filename='commit.log', filemode='a',
+                        level=logging.DEBUG)
+    logging.info("   {}\n".format(message))
+
+    os.system(commit_cmd % message)
+
+    # Push changes.
+    push_cmd = """git push"""
+    os.system(push_cmd)
 
 
 def main():
