@@ -1,10 +1,10 @@
 
-# Cron job to run script every day at 23:30
+# Cron job to run script every day at 22:30
 
 # min  hour day-of-month month day-of-week command
-30 23 * * * python /media/rest/github/asteca-project/pull-github-issues/github_closed_issues.py
+30 22 * * * python /media/rest/github/asteca-project/pull-github-issues/github_closed_issues.py
 
 # add job via command:
 http://unix.stackexchange.com/questions/187005/add-cron-job-via-single-command
 
-(crontab -u gabriel -l; echo "30 23 * * * python /media/rest/github/asteca-project/pull-github-issues/github_closed_issues.py" ) | crontab -u gabriel -
+(crontab -u gabriel -l; echo "30 22 * * * python /home/gabriel/Github/asteca-project/pull-github-issues/github_closed_issues.py" ) | crontab -u gabriel -
